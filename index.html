@@ -52,9 +52,9 @@
             pointer-events: none;
         }
 
-        /* Hide old DNA container - we're using 3D now */
+        /* Hide old DNA container - we're using 3D spine now */
         .dna-container {
-            display: none;
+            display: none !important;
         }
         
         /* Hide traditional cards - we have 3D floating cards now */
@@ -1779,186 +1779,6 @@
             });
         });
 
-        // 3D Glass DNA Helix Creation
-        function create3DGlassDNA() {
-            const dnaContainer = document.getElementById('dna-container');
-            
-            // Create main DNA helix
-            const dnaHelix = document.createElement('div');
-            dnaHelix.className = 'dna-helix-3d';
-            
-            // Create DNA strand
-            const dnaStrand = document.createElement('div');
-            dnaStrand.className = 'dna-strand';
-            
-            // Generate DNA base pairs along the strand
-            const basePairs = 40; // Reduced for better performance
-            
-            for (let i = 0; i < basePairs; i++) {
-                const progress = i / basePairs;
-                const yPos = progress * 100;
-                const rotation = progress * 360 * 3; // Three full rotations
-                
-                // Create base pair with enhanced glass effect
-                const basePair = document.createElement('div');
-                basePair.className = 'dna-base glass-dna-base';
-                basePair.style.cssText = `
-                    top: ${yPos}%;
-                    transform: translateX(-50%) rotateY(${rotation}deg);
-                    animation-delay: ${i * 0.05}s;
-                `;
-                
-                // Add glass-like nucleotides
-                const nucleotide1 = document.createElement('div');
-                const nucleotide2 = document.createElement('div');
-                nucleotide1.className = 'dna-nucleotide left';
-                nucleotide2.className = 'dna-nucleotide right';
-                
-                // Vary nucleotide colors for visual interest
-                const colors = [
-                    'rgba(102, 126, 234, 0.9)', // Blue
-                    'rgba(240, 147, 251, 0.9)', // Pink
-                    'rgba(118, 75, 162, 0.9)',  // Purple
-                    'rgba(245, 87, 108, 0.9)'   // Coral
-                ];
-                
-                const color1 = colors[i % 4];
-                const color2 = colors[(i + 2) % 4];
-                
-                nucleotide1.style.background = `radial-gradient(circle, ${color1} 0%, ${color1}80 100%)`;
-                nucleotide2.style.background = `radial-gradient(circle, ${color2} 0%, ${color2}80 100%)`;
-                
-                // Add individual animation delays
-                nucleotide1.style.animationDelay = `${i * 0.1}s`;
-                nucleotide2.style.animationDelay = `${(i * 0.1) + 0.5}s`;
-                
-                basePair.appendChild(nucleotide1);
-                basePair.appendChild(nucleotide2);
-                dnaStrand.appendChild(basePair);
-            }
-            
-            // Add ambient glow effect
-            const glowEffect = document.createElement('div');
-            glowEffect.className = 'dna-glow';
-            
-            dnaHelix.appendChild(dnaStrand);
-            dnaHelix.appendChild(glowEffect);
-            dnaContainer.appendChild(dnaHelix);
-            
-            // Add scroll interaction
-            setupDNAInteractions(dnaHelix);
-        }
-        
-        // DNA Scroll and Interaction Effects
-        function setupDNAInteractions(dnaHelix) {
-            let lastScrollY = window.scrollY;
-            let rotationSpeed = 1;
-            
-            window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                const scrollDelta = currentScrollY - lastScrollY;
-                
-                // Adjust rotation speed based on scroll velocity
-                rotationSpeed += Math.abs(scrollDelta) * 0.01;
-                rotationSpeed = Math.min(rotationSpeed, 3); // Cap maximum speed
-                
-                // Apply dynamic rotation
-                const currentDuration = parseFloat(dnaHelix.style.animationDuration) || 20;
-                const newDuration = Math.max(5, 20 - rotationSpeed);
-                dnaHelix.style.animationDuration = `${newDuration}s`;
-                
-                // Gradually slow down when not scrolling
-                setTimeout(() => {
-                    if (Math.abs(window.scrollY - currentScrollY) < 5) {
-                        rotationSpeed *= 0.95;
-                        if (rotationSpeed < 1) rotationSpeed = 1;
-                    }
-                }, 100);
-                
-                lastScrollY = currentScrollY;
-            });
-            
-            // Mouse move interaction
-            document.addEventListener('mousemove', (e) => {
-                const mouseX = e.clientX / window.innerWidth;
-                const mouseY = e.clientY / window.innerHeight;
-                
-                // Subtle parallax effect based on mouse position
-                const rotateX = (mouseY - 0.5) * 10;
-                const rotateY = (mouseX - 0.5) * 10;
-                
-                dnaHelix.style.transform = `
-                    translateX(-50%) 
-                    rotateY(${rotateY}deg) 
-                    rotateX(${rotateX}deg)
-                `;
-            });
-        }
-        
-        // Initialize the 3D DNA helix
-        create3DGlassDNA();
-        
-        // Mouse trail water drops
-        let mouseTrail = [];
-        let lastMouseMove = Date.now();
-        
-        document.addEventListener('mousemove', (e) => {
-            const now = Date.now();
-            
-            // Only create drops if mouse is moving and not too frequently
-            if (now - lastMouseMove > 100) {
-                createWaterDrop(e.clientX, e.clientY);
-                lastMouseMove = now;
-                
-                // Limit trail length
-                mouseTrail.push({ x: e.clientX, y: e.clientY, time: now });
-                mouseTrail = mouseTrail.filter(point => now - point.time < 2000);
-            }
-        });
-        
-        function createWaterDrop(x, y) {
-            const drop = document.createElement('div');
-            drop.className = 'water-drop';
-            
-            // Random variations for natural look
-            const offsetX = (Math.random() - 0.5) * 20;
-            const offsetY = (Math.random() - 0.5) * 10;
-            const scale = 0.8 + Math.random() * 0.4;
-            const fallDuration = 1.5 + Math.random() * 1;
-            
-            drop.style.cssText = `
-                left: ${x + offsetX}px;
-                top: ${y + offsetY}px;
-                transform: scale(${scale});
-                animation-duration: ${fallDuration}s;
-            `;
-            
-            document.body.appendChild(drop);
-            
-            // Remove drop after animation
-            setTimeout(() => {
-                if (drop.parentNode) {
-                    drop.parentNode.removeChild(drop);
-                }
-            }, fallDuration * 1000);
-        }
-
-        // Dynamic gradient background
-        function updateGradient() {
-            const time = new Date().getHours();
-            const body = document.body;
-            
-            if (time >= 6 && time < 18) {
-                // Day gradient
-                body.style.background = 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)';
-            } else {
-                // Night gradient
-                body.style.background = 'linear-gradient(135deg, #0a0a0f 0%, #0f1419 50%, #1a1a2e 100%)';
-            }
-        }
-        updateGradient();
-        setInterval(updateGradient, 60000); // Update every minute
-
         // Console greeting
         console.log('%c Welcome to Johannes\' Portfolio!', 'font-size: 18px; font-weight: bold; color: #667eea;');
         console.log('%cFeel free to explore the code and get in touch!', 'font-size: 14px; color: #a0aec0;');
@@ -2092,25 +1912,69 @@
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             
-            // Lighting setup
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            // Enhanced lighting setup for ethereal blue glass spine
+            const ambientLight = new THREE.AmbientLight(0x2A4A6B, 0.4); // Blue-tinted ambient
             scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(50, 50, 50);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
+            // Main directional light for spine illumination - cooler tone
+            const mainDirectionalLight = new THREE.DirectionalLight(0xB8D4F0, 1.8);
+            mainDirectionalLight.position.set(40, 60, 35);
+            mainDirectionalLight.castShadow = true;
+            mainDirectionalLight.shadow.mapSize.width = 4096;
+            mainDirectionalLight.shadow.mapSize.height = 4096;
+            mainDirectionalLight.shadow.camera.near = 0.1;
+            mainDirectionalLight.shadow.camera.far = 200;
+            mainDirectionalLight.shadow.camera.left = -60;
+            mainDirectionalLight.shadow.camera.right = 60;
+            mainDirectionalLight.shadow.camera.top = 60;
+            mainDirectionalLight.shadow.camera.bottom = -60;
+            mainDirectionalLight.shadow.bias = -0.001;
+            scene.add(mainDirectionalLight);
             
-            // Point lights for dramatic effect
-            const pointLight1 = new THREE.PointLight(0x667eea, 1, 100);
-            pointLight1.position.set(20, 20, 20);
-            scene.add(pointLight1);
+            // Secondary directional light for blue rim lighting
+            const rimLight = new THREE.DirectionalLight(0x4A90E2, 1.2);
+            rimLight.position.set(-30, 40, -25);
+            scene.add(rimLight);
             
-            const pointLight2 = new THREE.PointLight(0xf093fb, 1, 100);
-            pointLight2.position.set(-20, -20, 20);
-            scene.add(pointLight2);
+            // Blue spine-focused point lights for glass illumination
+            const spineLight1 = new THREE.PointLight(0x4A90E2, 2.5, 80);
+            spineLight1.position.set(20, 25, 20);
+            spineLight1.castShadow = true;
+            spineLight1.shadow.mapSize.width = 2048;
+            spineLight1.shadow.mapSize.height = 2048;
+            scene.add(spineLight1);
+            
+            const spineLight2 = new THREE.PointLight(0x6BB3FF, 2.2, 70);
+            spineLight2.position.set(-18, -15, 22);
+            spineLight2.castShadow = true;
+            spineLight2.shadow.mapSize.width = 2048;
+            spineLight2.shadow.mapSize.height = 2048;
+            scene.add(spineLight2);
+            
+            const spineLight3 = new THREE.PointLight(0x5BA0F0, 2.0, 60);
+            spineLight3.position.set(5, 10, -25);
+            scene.add(spineLight3);
+            
+            // Inner glow lights for ethereal effect
+            const innerGlow1 = new THREE.PointLight(0x87CEEB, 1.8, 40);
+            innerGlow1.position.set(0, 30, 8);
+            scene.add(innerGlow1);
+            
+            const innerGlow2 = new THREE.PointLight(0x87CEEB, 1.8, 40);
+            innerGlow2.position.set(0, -30, 8);
+            scene.add(innerGlow2);
+            
+            // Soft fill light for overall illumination
+            const fillLight = new THREE.DirectionalLight(0x87CEEB, 0.8);
+            fillLight.position.set(0, 0, 50);
+            scene.add(fillLight);
+            
+            // Store lights for animation
+            scene.userData.spineLight1 = spineLight1;
+            scene.userData.spineLight2 = spineLight2;
+            scene.userData.spineLight3 = spineLight3;
+            scene.userData.innerGlow1 = innerGlow1;
+            scene.userData.innerGlow2 = innerGlow2;
             
             // Create 3D helix
             create3DHelix();
@@ -2143,113 +2007,300 @@
             }, 2000);
         }
         
-        // Create the fully 3D DNA helix
+        // Create the fully 3D glass human spine
         function create3DHelix() {
             helixGroup = new THREE.Group();
             
-            // Helix parameters
-            const turns = 8;
-            const height = 60;
-            const radius = 8;
-            const segments = 200;
+            // Spine parameters - anatomically inspired
+            const spineHeight = 70;
+            const numVertebrae = 26; // 7 cervical + 12 thoracic + 5 lumbar + 2 sacral vertebrae (simplified)
+            const vertebraeSpacing = spineHeight / (numVertebrae - 1);
             
-            // Materials for different parts
-            const glassMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0x667eea,
+            // Enhanced glass materials for spine components - matching reference image
+            const vertebraeGlassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x4A90E2, // Beautiful translucent blue like the reference
                 transparent: true,
-                opacity: 0.8,
-                roughness: 0.1,
-                metalness: 0.1,
-                transmission: 0.5,
-                thickness: 0.5,
+                opacity: 0.85,
+                roughness: 0.02,
+                metalness: 0.05,
+                transmission: 0.92, // Higher transmission for more glass-like effect
+                thickness: 1.5,
                 clearcoat: 1.0,
-                clearcoatRoughness: 0.1
+                clearcoatRoughness: 0.01,
+                ior: 1.52, // Crystal glass index of refraction
+                emissive: 0x1A4A7A, // Subtle blue emissive glow
+                emissiveIntensity: 0.25,
+                reflectivity: 0.8,
+                envMapIntensity: 2.0
             });
             
-            const nucleotideMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0xf093fb,
+            const spinalCordMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x6BB3FF, // Lighter blue for spinal cord
+                transparent: true,
+                opacity: 0.7,
+                roughness: 0.05,
+                metalness: 0.1,
+                transmission: 0.8,
+                thickness: 1.0,
+                emissive: 0x4A90E2,
+                emissiveIntensity: 0.6,
+                clearcoat: 0.8,
+                clearcoatRoughness: 0.02
+            });
+            
+            const processGlassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x5BA0F0, // Slightly different blue tint for processes
+                transparent: true,
+                opacity: 0.75,
+                roughness: 0.03,
+                metalness: 0.08,
+                transmission: 0.88,
+                thickness: 1.2,
+                clearcoat: 0.95,
+                clearcoatRoughness: 0.02,
+                ior: 1.52,
+                emissive: 0x2A5A8A,
+                emissiveIntensity: 0.2,
+                reflectivity: 0.75,
+                envMapIntensity: 1.8
+            });
+            
+            // Create spinal cord running through the center with enhanced curves
+            const spinalCordCurvePoints = [];
+            for (let i = 0; i <= 150; i++) {
+                const t = i / 150;
+                const y = (t - 0.5) * spineHeight;
+                
+                // More pronounced anatomical curves matching the reference image
+                let x = 0;
+                
+                // Cervical lordosis (forward curve) - more pronounced
+                if (t < 0.25) {
+                    const cervicalT = t / 0.25;
+                    x += Math.sin(cervicalT * Math.PI * 0.8) * 2.5;
+                }
+                
+                // Thoracic kyphosis (backward curve) - stronger curve
+                if (t >= 0.25 && t < 0.7) {
+                    const thoracicT = (t - 0.25) / 0.45;
+                    x += -Math.sin(thoracicT * Math.PI) * 4.0;
+                }
+                
+                // Lumbar lordosis (forward curve) - more defined
+                if (t >= 0.7 && t < 0.9) {
+                    const lumbarT = (t - 0.7) / 0.2;
+                    x += Math.sin(lumbarT * Math.PI * 1.2) * 3.0;
+                }
+                
+                // Sacral curve
+                if (t >= 0.9) {
+                    const sacralT = (t - 0.9) / 0.1;
+                    x += -Math.sin(sacralT * Math.PI) * 1.5;
+                }
+                
+                // Add slight lateral curvature for realism
+                const z = Math.sin(t * Math.PI * 2.5) * 0.3;
+                
+                spinalCordCurvePoints.push(new THREE.Vector3(x, y, z));
+            }
+            
+            const spinalCordCurve = new THREE.CatmullRomCurve3(spinalCordCurvePoints);
+            const spinalCordGeometry = new THREE.TubeGeometry(spinalCordCurve, 150, 0.3, 16, false);
+            const spinalCord = new THREE.Mesh(spinalCordGeometry, spinalCordMaterial);
+            spinalCord.castShadow = true;
+            spinalCord.receiveShadow = true;
+            helixGroup.add(spinalCord);
+            
+            // Create individual vertebrae with enhanced detail
+            for (let i = 0; i < numVertebrae; i++) {
+                const vertebraGroup = new THREE.Group();
+                const t = i / (numVertebrae - 1);
+                const curveIndex = Math.floor(t * 150);
+                const spinalCurvePoint = spinalCordCurvePoints[curveIndex];
+                
+                // Determine vertebra type and enhanced sizing
+                let vertebraSize = 1.0;
+                let bodyHeight = 1.8;
+                let bodyRadius = 1.5;
+                
+                if (i < 7) { // Cervical vertebrae - smaller and more delicate
+                    vertebraSize = 0.6;
+                    bodyHeight = 1.3;
+                    bodyRadius = 1.2;
+                } else if (i < 19) { // Thoracic vertebrae - medium with rib connections
+                    vertebraSize = 0.85;
+                    bodyHeight = 1.6;
+                    bodyRadius = 1.4;
+                } else { // Lumbar vertebrae - larger and more robust
+                    vertebraSize = 1.3;
+                    bodyHeight = 2.0;
+                    bodyRadius = 1.8;
+                }
+                
+                // Enhanced vertebral body with more realistic shape
+                const bodyGeometry = new THREE.CylinderGeometry(
+                    bodyRadius * vertebraSize * 0.9, // Top radius slightly smaller
+                    bodyRadius * vertebraSize, // Bottom radius
+                    bodyHeight, 
+                    16 // More segments for smoother appearance
+                );
+                const vertebralBody = new THREE.Mesh(bodyGeometry, vertebraeGlassMaterial);
+                vertebralBody.castShadow = true;
+                vertebralBody.receiveShadow = true;
+                vertebraGroup.add(vertebralBody);
+                
+                // Enhanced spinous process - more anatomically shaped
+                const spinousLength = i < 7 ? 1.8 : i < 19 ? 2.8 : 2.2; // Thoracic longest
+                const spinousGeometry = new THREE.ConeGeometry(
+                    0.25 * vertebraSize, 
+                    spinousLength * vertebraSize, 
+                    8
+                );
+                const spinousProcess = new THREE.Mesh(spinousGeometry, processGlassMaterial);
+                spinousProcess.position.set(-1.8 * vertebraSize, 0, 0);
+                spinousProcess.rotation.z = Math.PI / 2;
+                
+                // Add slight downward angle for thoracic spinous processes
+                if (i >= 7 && i < 19) {
+                    spinousProcess.rotation.y = -0.3;
+                }
+                
+                spinousProcess.castShadow = true;
+                spinousProcess.receiveShadow = true;
+                vertebraGroup.add(spinousProcess);
+                
+                // Enhanced transverse processes with more detail
+                const transverseLength = i < 7 ? 1.2 : i < 19 ? 1.8 : 1.5;
+                const transverseGeometry = new THREE.CylinderGeometry(
+                    0.15 * vertebraSize, 
+                    0.25 * vertebraSize, 
+                    transverseLength * vertebraSize, 
+                    12
+                );
+                
+                // Left transverse process
+                const transverseLeft = new THREE.Mesh(transverseGeometry, processGlassMaterial);
+                transverseLeft.position.set(0.3 * vertebraSize, 0, 2.2 * vertebraSize);
+                transverseLeft.rotation.x = Math.PI / 2;
+                transverseLeft.rotation.y = -0.2; // Slight backward angle
+                transverseLeft.castShadow = true;
+                transverseLeft.receiveShadow = true;
+                vertebraGroup.add(transverseLeft);
+                
+                // Right transverse process
+                const transverseRight = new THREE.Mesh(transverseGeometry, processGlassMaterial);
+                transverseRight.position.set(0.3 * vertebraSize, 0, -2.2 * vertebraSize);
+                transverseRight.rotation.x = Math.PI / 2;
+                transverseRight.rotation.y = 0.2; // Slight backward angle
+                transverseRight.castShadow = true;
+                transverseRight.receiveShadow = true;
+                vertebraGroup.add(transverseRight);
+                
+                // Enhanced neural arch with more realistic proportions
+                const archGeometry = new THREE.TorusGeometry(
+                    1.4 * vertebraSize, 
+                    0.25 * vertebraSize, 
+                    12, 
+                    20, 
+                    Math.PI
+                );
+                const neuralArch = new THREE.Mesh(archGeometry, processGlassMaterial);
+                neuralArch.position.set(0.6 * vertebraSize, 0, 0);
+                neuralArch.rotation.y = Math.PI / 2;
+                neuralArch.castShadow = true;
+                neuralArch.receiveShadow = true;
+                vertebraGroup.add(neuralArch);
+                
+                // Add superior and inferior articular processes
+                const articularGeometry = new THREE.SphereGeometry(0.2 * vertebraSize, 8, 8);
+                
+                // Superior articular processes
+                const supArticularLeft = new THREE.Mesh(articularGeometry, processGlassMaterial);
+                supArticularLeft.position.set(0.8 * vertebraSize, bodyHeight * 0.4, 1.0 * vertebraSize);
+                vertebraGroup.add(supArticularLeft);
+                
+                const supArticularRight = new THREE.Mesh(articularGeometry, processGlassMaterial);
+                supArticularRight.position.set(0.8 * vertebraSize, bodyHeight * 0.4, -1.0 * vertebraSize);
+                vertebraGroup.add(supArticularRight);
+                
+                // Inferior articular processes
+                const infArticularLeft = new THREE.Mesh(articularGeometry, processGlassMaterial);
+                infArticularLeft.position.set(0.8 * vertebraSize, -bodyHeight * 0.4, 1.0 * vertebraSize);
+                vertebraGroup.add(infArticularLeft);
+                
+                const infArticularRight = new THREE.Mesh(articularGeometry, processGlassMaterial);
+                infArticularRight.position.set(0.8 * vertebraSize, -bodyHeight * 0.4, -1.0 * vertebraSize);
+                vertebraGroup.add(infArticularRight);
+                
+                // Position vertebra along the enhanced spinal curve
+                vertebraGroup.position.copy(spinalCurvePoint);
+                
+                // Enhanced natural orientation based on spinal curves
+                if (i < 7) { // Cervical - forward tilt
+                    vertebraGroup.rotation.x = Math.sin(t * Math.PI * 1.2) * 0.25;
+                } else if (i < 19) { // Thoracic - backward tilt
+                    vertebraGroup.rotation.x = -Math.sin((t - 0.25) * Math.PI * 1.8) * 0.35;
+                } else { // Lumbar - forward tilt
+                    vertebraGroup.rotation.x = Math.sin((t - 0.7) * Math.PI * 2.0) * 0.3;
+                }
+                
+                // Store enhanced vertebra data
+                vertebraGroup.userData = { 
+                    originalRotation: vertebraGroup.rotation.clone(),
+                    originalPosition: vertebraGroup.position.clone(),
+                    index: i,
+                    type: i < 7 ? 'cervical' : i < 19 ? 'thoracic' : 'lumbar',
+                    size: vertebraSize
+                };
+                
+                helixGroup.add(vertebraGroup);
+            }
+            
+            // Add ethereal blue neural particles around the spine
+            const neuralParticleGeometry = new THREE.SphereGeometry(0.08, 12, 12);
+            const neuralParticleMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x87CEEB,
                 transparent: true,
                 opacity: 0.9,
-                roughness: 0.2,
-                metalness: 0.3,
-                emissive: 0x221122,
-                emissiveIntensity: 0.2
+                emissive: 0x4A90E2,
+                emissiveIntensity: 0.8,
+                roughness: 0.1,
+                metalness: 0.2,
+                transmission: 0.6,
+                thickness: 0.3
             });
             
-            // Create helix backbone curves
-            const curve1Points = [];
-            const curve2Points = [];
-            
-            for (let i = 0; i <= segments; i++) {
-                const t = i / segments;
-                const angle = t * Math.PI * 2 * turns;
-                const y = (t - 0.5) * height;
+            for (let i = 0; i < 60; i++) {
+                const particle = new THREE.Mesh(neuralParticleGeometry, neuralParticleMaterial);
+                const t = Math.random();
+                const radius = 4 + Math.random() * 3;
+                const angle = Math.random() * Math.PI * 2;
+                const curveIndex = Math.floor(t * 150);
+                const spinalPoint = spinalCordCurvePoints[curveIndex];
                 
-                // First strand
-                const x1 = Math.cos(angle) * radius;
-                const z1 = Math.sin(angle) * radius;
-                curve1Points.push(new THREE.Vector3(x1, y, z1));
+                particle.position.set(
+                    spinalPoint.x + Math.cos(angle) * radius,
+                    spinalPoint.y + (Math.random() - 0.5) * 6,
+                    spinalPoint.z + Math.sin(angle) * radius
+                );
                 
-                // Second strand (180 degrees offset)
-                const x2 = Math.cos(angle + Math.PI) * radius;
-                const z2 = Math.sin(angle + Math.PI) * radius;
-                curve2Points.push(new THREE.Vector3(x2, y, z2));
+                particle.userData = { 
+                    originalY: spinalPoint.y,
+                    originalX: spinalPoint.x,
+                    originalZ: spinalPoint.z,
+                    angle: angle,
+                    radius: radius,
+                    speed: 0.3 + Math.random() * 0.4,
+                    phase: Math.random() * Math.PI * 2
+                };
+                
+                helixGroup.add(particle);
             }
             
-            // Create curves
-            const curve1 = new THREE.CatmullRomCurve3(curve1Points);
-            const curve2 = new THREE.CatmullRomCurve3(curve2Points);
+            // Position and scale the spine
+            helixGroup.scale.set(0.8, 0.8, 0.8);
             
-            // Create tube geometry for backbones
-            const tubeGeometry1 = new THREE.TubeGeometry(curve1, segments, 0.3, 8, false);
-            const tubeGeometry2 = new THREE.TubeGeometry(curve2, segments, 0.3, 8, false);
-            
-            const backbone1 = new THREE.Mesh(tubeGeometry1, glassMaterial);
-            const backbone2 = new THREE.Mesh(tubeGeometry2, glassMaterial);
-            
-            backbone1.castShadow = true;
-            backbone1.receiveShadow = true;
-            backbone2.castShadow = true;
-            backbone2.receiveShadow = true;
-            
-            helixGroup.add(backbone1);
-            helixGroup.add(backbone2);
-            
-            // Create base pairs (rungs)
-            const basePairGeometry = new THREE.CylinderGeometry(0.1, 0.1, radius * 2, 8);
-            
-            for (let i = 0; i < segments; i += 4) {
-                const t = i / segments;
-                const angle = t * Math.PI * 2 * turns;
-                const y = (t - 0.5) * height;
-                
-                const basePair = new THREE.Mesh(basePairGeometry, nucleotideMaterial);
-                basePair.position.set(0, y, 0);
-                basePair.rotation.y = angle;
-                basePair.castShadow = true;
-                basePair.receiveShadow = true;
-                
-                helixGroup.add(basePair);
-                
-                // Add nucleotide spheres at the ends
-                const nucleotideGeometry = new THREE.SphereGeometry(0.8, 16, 16);
-                
-                const nucleotide1 = new THREE.Mesh(nucleotideGeometry, nucleotideMaterial);
-                const nucleotide2 = new THREE.Mesh(nucleotideGeometry, nucleotideMaterial);
-                
-                nucleotide1.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
-                nucleotide2.position.set(Math.cos(angle + Math.PI) * radius, y, Math.sin(angle + Math.PI) * radius);
-                
-                nucleotide1.castShadow = true;
-                nucleotide1.receiveShadow = true;
-                nucleotide2.castShadow = true;
-                nucleotide2.receiveShadow = true;
-                
-                helixGroup.add(nucleotide1);
-                helixGroup.add(nucleotide2);
-            }
-            
-            // Add the helix group to scene
+            // Add the spine group to scene
             scene.add(helixGroup);
         }
         
@@ -2750,15 +2801,70 @@
             requestAnimationFrame(animate);
             
             const time = Date.now() * 0.001;
+            const scrollY = window.pageYOffset;
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const scrollProgress = Math.min(scrollY / maxScroll, 1);
             
-            // Rotate helix
+            // Rotate spine based on scroll with natural spinal movement
             if (helixGroup) {
-                helixGroup.rotation.y = time * 0.2;
-                helixGroup.rotation.x = Math.sin(time * 0.3) * 0.1;
+                // Base rotation from time (gentle continuous rotation)
+                helixGroup.rotation.y = time * 0.1;
                 
-                // Mouse interaction
-                helixGroup.rotation.x += mouseY * 0.05;
-                helixGroup.rotation.y += mouseX * 0.05;
+                // Add scroll-based rotation (spine rotates as you scroll)
+                helixGroup.rotation.y += scrollProgress * Math.PI * 4; // 4 full rotations through page
+                
+                // Add natural spinal flexion based on scroll
+                helixGroup.rotation.x = Math.sin(scrollProgress * Math.PI * 2) * 0.3;
+                helixGroup.rotation.z = Math.cos(scrollProgress * Math.PI * 1.5) * 0.2;
+                
+                // Subtle lateral bending
+                helixGroup.position.x = Math.sin(scrollProgress * Math.PI * 3) * 2;
+                
+                // Mouse interaction - make spine "look" towards mouse
+                const mouseInfluence = 0.1;
+                helixGroup.rotation.x += mouseY * mouseInfluence;
+                helixGroup.rotation.y += mouseX * mouseInfluence;
+                
+                // Animate individual vertebrae based on scroll
+                helixGroup.children.forEach((child, index) => {
+                    if (child.userData && child.userData.type) {
+                        const vertebraIndex = child.userData.index;
+                        const segmentProgress = (scrollProgress * 26 - vertebraIndex) / 26;
+                        
+                        // Individual vertebra rotation based on scroll
+                        if (child.userData.originalRotation) {
+                            child.rotation.x = child.userData.originalRotation.x + 
+                                Math.sin(segmentProgress * Math.PI * 3 + time) * 0.1;
+                            child.rotation.z = child.userData.originalRotation.z + 
+                                Math.cos(segmentProgress * Math.PI * 2 + time * 0.7) * 0.05;
+                        }
+                        
+                        // Subtle pulsing effect based on scroll position
+                        const pulse = 1 + Math.sin(scrollProgress * Math.PI * 8 + vertebraIndex * 0.5) * 0.05;
+                        child.scale.set(pulse, pulse, pulse);
+                    }
+                    
+                    // Animate blue neural particles along the spinal curve
+                    if (child.userData && child.userData.radius !== undefined) {
+                        const particleData = child.userData;
+                        particleData.angle += particleData.speed * 0.015;
+                        
+                        // Calculate position relative to spinal curve
+                        const offsetX = Math.cos(particleData.angle + scrollProgress * Math.PI * 2 + particleData.phase) * particleData.radius;
+                        const offsetZ = Math.sin(particleData.angle + scrollProgress * Math.PI * 2 + particleData.phase) * particleData.radius;
+                        
+                        child.position.x = particleData.originalX + offsetX;
+                        child.position.z = particleData.originalZ + offsetZ;
+                        child.position.y = particleData.originalY + Math.sin(time * 1.5 + particleData.phase) * 2;
+                        
+                        // Blue ethereal pulse
+                        const bluePulse = 0.8 + Math.sin(time * 3 + particleData.phase) * 0.4;
+                        child.scale.setScalar(bluePulse);
+                        
+                        // Update emissive intensity for glow effect
+                        child.material.emissiveIntensity = 0.6 + Math.sin(time * 2 + particleData.phase) * 0.3;
+                    }
+                });
             }
             
             // Animate floating cards
@@ -2784,20 +2890,62 @@
             
             // Animate particles
             if (particles) {
-                particles.rotation.y = time * 0.1;
+                particles.rotation.y = time * 0.1 + scrollProgress * Math.PI;
                 particles.rotation.x = time * 0.05;
                 
                 // Pulse effect
                 const positions = particles.geometry.attributes.position.array;
                 for (let i = 0; i < positions.length; i += 3) {
-                    positions[i + 1] += Math.sin(time + i) * 0.01;
+                    positions[i + 1] += Math.sin(time + i + scrollProgress * 10) * 0.01;
                 }
                 particles.geometry.attributes.position.needsUpdate = true;
             }
             
-            // Camera gentle movement
-            camera.position.x += (mouseX * 3 - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY * 3 - camera.position.y) * 0.05;
+            // Animate spine lighting for ethereal blue glass effect
+            if (scene.userData.spineLight1) {
+                // Orbit lights around the spine with more graceful movement
+                const lightRadius1 = 25;
+                const lightRadius2 = 22;
+                
+                scene.userData.spineLight1.position.x = Math.cos(time * 0.3) * lightRadius1;
+                scene.userData.spineLight1.position.z = Math.sin(time * 0.3) * lightRadius1;
+                scene.userData.spineLight1.position.y = 20 + Math.sin(time * 0.4) * 12;
+                
+                scene.userData.spineLight2.position.x = Math.cos(time * 0.4 + Math.PI * 0.7) * lightRadius2;
+                scene.userData.spineLight2.position.z = Math.sin(time * 0.4 + Math.PI * 0.7) * lightRadius2;
+                scene.userData.spineLight2.position.y = -15 + Math.cos(time * 0.3) * 10;
+                
+                scene.userData.spineLight3.position.x = Math.sin(time * 0.25) * 15;
+                scene.userData.spineLight3.position.y = Math.cos(time * 0.35) * 20;
+                
+                // Pulse inner glow lights for ethereal effect
+                const glowIntensity1 = 1.5 + Math.sin(time * 1.5 + scrollProgress * Math.PI * 3) * 0.8;
+                const glowIntensity2 = 1.3 + Math.cos(time * 1.2 + scrollProgress * Math.PI * 2.5) * 0.7;
+                
+                scene.userData.innerGlow1.intensity = glowIntensity1;
+                scene.userData.innerGlow2.intensity = glowIntensity2;
+                
+                // Move inner glow lights through the spine
+                scene.userData.innerGlow1.position.y = 30 + Math.sin(time * 0.8 + scrollProgress * Math.PI * 3) * 20;
+                scene.userData.innerGlow1.position.x = Math.cos(time * 0.6) * 3;
+                
+                scene.userData.innerGlow2.position.y = -30 + Math.cos(time * 0.7 + scrollProgress * Math.PI * 2.5) * 20;
+                scene.userData.innerGlow2.position.x = Math.sin(time * 0.5) * 3;
+                
+                // Subtle intensity variations for all lights
+                scene.userData.spineLight1.intensity = 2.5 + Math.sin(time * 2) * 0.5;
+                scene.userData.spineLight2.intensity = 2.2 + Math.cos(time * 1.8) * 0.4;
+                scene.userData.spineLight3.intensity = 2.0 + Math.sin(time * 2.2) * 0.3;
+            }
+            
+            // Enhanced camera movement with scroll influence
+            const targetX = mouseX * 5 + Math.sin(scrollProgress * Math.PI * 2) * 2;
+            const targetY = -mouseY * 5 + Math.cos(scrollProgress * Math.PI * 1.5) * 3;
+            const targetZ = 30 + scrollProgress * 10; // Move camera closer as you scroll
+            
+            camera.position.x += (targetX - camera.position.x) * 0.05;
+            camera.position.y += (targetY - camera.position.y) * 0.05;
+            camera.position.z += (targetZ - camera.position.z) * 0.02;
             camera.lookAt(scene.position);
             
             renderer.render(scene, camera);
