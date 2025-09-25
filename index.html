@@ -52,6 +52,18 @@
             pointer-events: none;
         }
 
+        /* Hide old DNA container - we're using 3D now */
+        .dna-container {
+            display: none;
+        }
+        
+        /* Hide traditional cards - we have 3D floating cards now */
+        .skills-grid,
+        .projects-grid,
+        .timeline {
+            display: none;
+        }
+
         /* Loading Screen */
         .loader {
             position: fixed;
@@ -1033,6 +1045,264 @@
                 transform: translateY(-20px) rotate(180deg);
             }
         }
+
+        /* Card Modal Styles */
+        .card-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .card-modal.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            width: 90%;
+            max-width: 600px;
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.1));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .card-modal.active .modal-content {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .modal-header {
+            padding: 40px 40px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        .modal-category {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0;
+            line-height: 1.2;
+        }
+
+        .modal-body {
+            padding: 0 40px 40px;
+        }
+
+        .modal-description {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .modal-details {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .modal-skill {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-skill label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .modal-skill span {
+            font-weight: 700;
+            color: white;
+            font-size: 16px;
+        }
+
+        .modal-progress {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-progress label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .modal-progress-bar {
+            position: relative;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .modal-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .modal-progress-text {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+            
+            .modal-header {
+                padding: 30px 20px 15px;
+            }
+            
+            .modal-body {
+                padding: 0 20px 30px;
+            }
+            
+            .modal-title {
+                font-size: 24px;
+            }
+            
+            .modal-description {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1048,6 +1318,40 @@
 
     <!-- WebGL Canvas for 3D effects -->
     <canvas id="webgl-canvas"></canvas>
+
+    <!-- Card Information Modal -->
+    <div id="card-modal" class="card-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">×</button>
+            <div class="modal-header">
+                <div class="modal-icon" id="modal-icon">🎯</div>
+                <div class="modal-category" id="modal-category">CATEGORY</div>
+                <h2 class="modal-title" id="modal-title">Card Title</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-description" id="modal-description">
+                    Card description will appear here...
+                </div>
+                <div class="modal-details">
+                    <div class="modal-skill">
+                        <label>Skill Level / Date:</label>
+                        <span id="modal-skill">Intermediate</span>
+                    </div>
+                    <div class="modal-progress">
+                        <label>Progress:</label>
+                        <div class="modal-progress-bar">
+                            <div class="modal-progress-fill" id="modal-progress-fill"></div>
+                            <span class="modal-progress-text" id="modal-progress-text">75%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions" id="modal-actions">
+                    <!-- Action buttons will be added dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Interactive Particles -->
     <div class="particles" id="particles"></div>
@@ -1658,6 +1962,849 @@
         // Console greeting
         console.log('%c Welcome to Johannes\' Portfolio!', 'font-size: 18px; font-weight: bold; color: #667eea;');
         console.log('%cFeel free to explore the code and get in touch!', 'font-size: 14px; color: #a0aec0;');
+    </script>
+
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- 3D Helix Implementation -->
+    <script>
+        // Three.js variables
+        let scene, camera, renderer, helix, helixGroup;
+        let particleSystem, particles;
+        let floatingCards = [];
+        let cardMaterials = [];
+        let mouseX = 0, mouseY = 0;
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        let hoveredCard = null;
+        
+        // Card data
+        const cardData = [
+            // Technical Arsenal Cards
+            {
+                title: "Android Development",
+                description: "Building mobile experiences with Kotlin. From QR scanners to interactive apps.",
+                skill: "Beginner",
+                progress: 40,
+                icon: "",
+                color: 0x667eea,
+                category: "technical"
+            },
+            {
+                title: "Web Development", 
+                description: "Crafting responsive websites with HTML, CSS, and modern design principles.",
+                skill: "Intermediate",
+                progress: 70,
+                icon: "",
+                color: 0xf093fb,
+                category: "technical"
+            },
+            {
+                title: "Database Management",
+                description: "Designing efficient data structures and managing information systems.", 
+                skill: "Intermediate",
+                progress: 65,
+                icon: "",
+                color: 0x764ba2,
+                category: "technical"
+            },
+            
+            // Journey Timeline Cards
+            {
+                title: "The Beginning",
+                description: "Started my journey in tech with freelance teaching at Van Rhyn Primary School. Discovered my passion for problem-solving and helping others understand technology.",
+                skill: "2022",
+                progress: 100,
+                icon: "",
+                color: 0x48bb78,
+                category: "journey"
+            },
+            {
+                title: "Academic Growth",
+                description: "Pursued my Diploma in Business Information Systems at IUM. Dove deep into database management, web development, and systems analysis.",
+                skill: "2023-2024",
+                progress: 85,
+                icon: "",
+                color: 0xed8936,
+                category: "journey"
+            },
+            {
+                title: "Project Innovation",
+                description: "Collaborated with classmates to build 'Quick Read' - a QR code scanner and generator app. My first major Android development project using Kotlin.",
+                skill: "2024",
+                progress: 90,
+                icon: "",
+                color: 0xf5576c,
+                category: "journey"
+            },
+            {
+                title: "Future Vision",
+                description: "Working towards becoming a systems analyst while exploring new technologies. Next stop: Switzerland (hopefully not just in my dreams!).",
+                skill: "Present",
+                progress: 75,
+                icon: "",
+                color: 0x9f7aea,
+                category: "journey"
+            },
+            
+            // Project Cards
+            {
+                title: "Quick Read Project",
+                description: "A comprehensive QR code solution built with Kotlin. Features both scanning and generation capabilities with offline functionality.",
+                skill: "Kotlin • Android • QR Tech",
+                progress: 95,
+                icon: "",
+                color: 0x38b2ac,
+                category: "project"
+            },
+            {
+                title: "Interactive Portfolio",
+                description: "This very website! A modern, animated portfolio showcasing immersive 3D experiences with WebGL and Three.js magic.",
+                skill: "Three.js • WebGL • GSAP",
+                progress: 98,
+                icon: "",
+                color: 0xe53e3e,
+                category: "project"
+            }
+        ];
+        
+        // Initialize Three.js
+        function init3D() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x0a0a0f, 1, 1000);
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+            camera.position.y = 0;
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('webgl-canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            // Point lights for dramatic effect
+            const pointLight1 = new THREE.PointLight(0x667eea, 1, 100);
+            pointLight1.position.set(20, 20, 20);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0xf093fb, 1, 100);
+            pointLight2.position.set(-20, -20, 20);
+            scene.add(pointLight2);
+            
+            // Create 3D helix
+            create3DHelix();
+            
+            // Create floating 3D cards
+            createFloating3DCards();
+            
+            // Create particle system
+            createParticles();
+            
+            // Mouse movement tracking
+            document.addEventListener('mousemove', onMouseMove, false);
+            
+            // Click interaction
+            document.addEventListener('click', onMouseClick, false);
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Start animation loop
+            animate();
+            
+            // Hide loader after 3D scene is ready
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 2000);
+        }
+        
+        // Create the fully 3D DNA helix
+        function create3DHelix() {
+            helixGroup = new THREE.Group();
+            
+            // Helix parameters
+            const turns = 8;
+            const height = 60;
+            const radius = 8;
+            const segments = 200;
+            
+            // Materials for different parts
+            const glassMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0x667eea,
+                transparent: true,
+                opacity: 0.8,
+                roughness: 0.1,
+                metalness: 0.1,
+                transmission: 0.5,
+                thickness: 0.5,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1
+            });
+            
+            const nucleotideMaterial = new THREE.MeshPhysicalMaterial({
+                color: 0xf093fb,
+                transparent: true,
+                opacity: 0.9,
+                roughness: 0.2,
+                metalness: 0.3,
+                emissive: 0x221122,
+                emissiveIntensity: 0.2
+            });
+            
+            // Create helix backbone curves
+            const curve1Points = [];
+            const curve2Points = [];
+            
+            for (let i = 0; i <= segments; i++) {
+                const t = i / segments;
+                const angle = t * Math.PI * 2 * turns;
+                const y = (t - 0.5) * height;
+                
+                // First strand
+                const x1 = Math.cos(angle) * radius;
+                const z1 = Math.sin(angle) * radius;
+                curve1Points.push(new THREE.Vector3(x1, y, z1));
+                
+                // Second strand (180 degrees offset)
+                const x2 = Math.cos(angle + Math.PI) * radius;
+                const z2 = Math.sin(angle + Math.PI) * radius;
+                curve2Points.push(new THREE.Vector3(x2, y, z2));
+            }
+            
+            // Create curves
+            const curve1 = new THREE.CatmullRomCurve3(curve1Points);
+            const curve2 = new THREE.CatmullRomCurve3(curve2Points);
+            
+            // Create tube geometry for backbones
+            const tubeGeometry1 = new THREE.TubeGeometry(curve1, segments, 0.3, 8, false);
+            const tubeGeometry2 = new THREE.TubeGeometry(curve2, segments, 0.3, 8, false);
+            
+            const backbone1 = new THREE.Mesh(tubeGeometry1, glassMaterial);
+            const backbone2 = new THREE.Mesh(tubeGeometry2, glassMaterial);
+            
+            backbone1.castShadow = true;
+            backbone1.receiveShadow = true;
+            backbone2.castShadow = true;
+            backbone2.receiveShadow = true;
+            
+            helixGroup.add(backbone1);
+            helixGroup.add(backbone2);
+            
+            // Create base pairs (rungs)
+            const basePairGeometry = new THREE.CylinderGeometry(0.1, 0.1, radius * 2, 8);
+            
+            for (let i = 0; i < segments; i += 4) {
+                const t = i / segments;
+                const angle = t * Math.PI * 2 * turns;
+                const y = (t - 0.5) * height;
+                
+                const basePair = new THREE.Mesh(basePairGeometry, nucleotideMaterial);
+                basePair.position.set(0, y, 0);
+                basePair.rotation.y = angle;
+                basePair.castShadow = true;
+                basePair.receiveShadow = true;
+                
+                helixGroup.add(basePair);
+                
+                // Add nucleotide spheres at the ends
+                const nucleotideGeometry = new THREE.SphereGeometry(0.8, 16, 16);
+                
+                const nucleotide1 = new THREE.Mesh(nucleotideGeometry, nucleotideMaterial);
+                const nucleotide2 = new THREE.Mesh(nucleotideGeometry, nucleotideMaterial);
+                
+                nucleotide1.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+                nucleotide2.position.set(Math.cos(angle + Math.PI) * radius, y, Math.sin(angle + Math.PI) * radius);
+                
+                nucleotide1.castShadow = true;
+                nucleotide1.receiveShadow = true;
+                nucleotide2.castShadow = true;
+                nucleotide2.receiveShadow = true;
+                
+                helixGroup.add(nucleotide1);
+                helixGroup.add(nucleotide2);
+            }
+            
+            // Add the helix group to scene
+            scene.add(helixGroup);
+        }
+        
+        // Create floating 3D glass cards
+        function createFloating3DCards() {
+            cardData.forEach((data, index) => {
+                // Card group
+                const cardGroup = new THREE.Group();
+                
+                // Enhanced metallic-glass material based on category
+                let glassMaterial;
+                if (data.category === 'technical') {
+                    glassMaterial = new THREE.MeshPhysicalMaterial({
+                        color: data.color,
+                        transparent: true,
+                        opacity: 0.2,
+                        roughness: 0.05,
+                        metalness: 0.8,
+                        transmission: 0.7,
+                        thickness: 0.8,
+                        clearcoat: 1.0,
+                        clearcoatRoughness: 0.05,
+                        envMapIntensity: 2.0,
+                        emissive: data.color,
+                        emissiveIntensity: 0.1
+                    });
+                } else if (data.category === 'journey') {
+                    glassMaterial = new THREE.MeshPhysicalMaterial({
+                        color: data.color,
+                        transparent: true,
+                        opacity: 0.25,
+                        roughness: 0.1,
+                        metalness: 0.6,
+                        transmission: 0.8,
+                        thickness: 0.6,
+                        clearcoat: 0.9,
+                        clearcoatRoughness: 0.1,
+                        envMapIntensity: 1.5,
+                        emissive: data.color,
+                        emissiveIntensity: 0.15,
+                        iridescence: 1.0,
+                        iridescenceIOR: 1.3
+                    });
+                } else { // project cards
+                    glassMaterial = new THREE.MeshPhysicalMaterial({
+                        color: data.color,
+                        transparent: true,
+                        opacity: 0.18,
+                        roughness: 0.02,
+                        metalness: 0.9,
+                        transmission: 0.85,
+                        thickness: 1.0,
+                        clearcoat: 1.0,
+                        clearcoatRoughness: 0.02,
+                        envMapIntensity: 2.5,
+                        emissive: data.color,
+                        emissiveIntensity: 0.2
+                    });
+                }
+                
+                // Card geometry - make journey cards slightly larger
+                const cardWidth = data.category === 'journey' ? 9 : 8;
+                const cardHeight = data.category === 'journey' ? 11 : 10;
+                const cardGeometry = new THREE.BoxGeometry(cardWidth, cardHeight, 0.6, 1, 1, 1);
+                const cardMesh = new THREE.Mesh(cardGeometry, glassMaterial);
+                
+                // Enhanced border/frame with metallic effect
+                const edgesGeometry = new THREE.EdgesGeometry(cardGeometry);
+                const edgesMaterial = new THREE.LineBasicMaterial({ 
+                    color: data.color, 
+                    transparent: true, 
+                    opacity: 0.8,
+                    linewidth: 2
+                });
+                const cardEdges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+                
+                // Create enhanced text canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = data.category === 'journey' ? 704 : 640;
+                const ctx = canvas.getContext('2d');
+                
+                // Background with subtle gradient
+                const gradientBg = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradientBg.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
+                gradientBg.addColorStop(0.5, 'rgba(20, 20, 30, 0.85)');
+                gradientBg.addColorStop(1, 'rgba(0, 0, 0, 0.9)');
+                ctx.fillStyle = gradientBg;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Category badge
+                ctx.fillStyle = `#${data.color.toString(16).padStart(6, '0')}`;
+                ctx.font = 'bold 16px Inter, Arial';
+                ctx.textAlign = 'center';
+                const categoryText = data.category.toUpperCase();
+                ctx.fillText(categoryText, 256, 30);
+                
+                // Icon with glow effect (only if icon exists)
+                if (data.icon && data.icon.trim() !== '') {
+                    ctx.shadowColor = `#${data.color.toString(16).padStart(6, '0')}`;
+                    ctx.shadowBlur = 20;
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 48px Inter, Arial';
+                    ctx.fillText(data.icon, 256, 100);
+                    ctx.shadowBlur = 0;
+                }
+                
+                // Title with enhanced styling
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 32px Inter, Arial';
+                const titleWords = data.title.split(' ');
+                const startY = (data.icon && data.icon.trim() !== '') ? 150 : 120; // Adjust title position if no icon
+                titleWords.forEach((word, i) => {
+                    ctx.fillText(word, 256, startY + (i * 38));
+                });
+                
+                // Description with better formatting
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '19px Inter, Arial';
+                const words = data.description.split(' ');
+                let line = '';
+                // Adjust description position based on title length and icon presence
+                const hasIcon = data.icon && data.icon.trim() !== '';
+                const baseY = hasIcon ? 
+                    (titleWords.length > 2 ? 260 : 230) : 
+                    (titleWords.length > 2 ? 230 : 200);
+                let textY = baseY;
+                words.forEach(word => {
+                    const testLine = line + word + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    if (metrics.width > 450 && line !== '') {
+                        ctx.fillText(line, 256, textY);
+                        line = word + ' ';
+                        textY += 26;
+                    } else {
+                        line = testLine;
+                    }
+                });
+                ctx.fillText(line, 256, textY);
+                
+                // Skill level/date with enhanced styling
+                ctx.fillStyle = `#${data.color.toString(16).padStart(6, '0')}`;
+                ctx.font = 'bold 22px Inter, Arial';
+                ctx.fillText(data.skill, 256, textY + 70);
+                
+                // Enhanced progress bar
+                const barWidth = 320;
+                const barHeight = 10;
+                const barX = 96;
+                const barY = textY + 90;
+                
+                // Background bar with rounded corners
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+                
+                // Progress bar with metallic gradient
+                const progressGradient = ctx.createLinearGradient(barX, 0, barX + barWidth, 0);
+                progressGradient.addColorStop(0, `#${data.color.toString(16).padStart(6, '0')}`);
+                progressGradient.addColorStop(0.5, '#ffffff');
+                progressGradient.addColorStop(1, `#${data.color.toString(16).padStart(6, '0')}`);
+                ctx.fillStyle = progressGradient;
+                ctx.fillRect(barX, barY, (barWidth * data.progress) / 100, barHeight);
+                
+                // Progress percentage
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px Inter, Arial';
+                ctx.fillText(`${data.progress}%`, 256, textY + 125);
+                
+                // Create texture from canvas
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.needsUpdate = true;
+                
+                // Enhanced text material
+                const textMaterial = new THREE.MeshBasicMaterial({ 
+                    map: texture, 
+                    transparent: true, 
+                    opacity: 0.95
+                });
+                
+                // Text plane
+                const textGeometry = new THREE.PlaneGeometry(cardWidth - 0.2, cardHeight - 0.2);
+                const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+                textMesh.position.z = 0.31;
+                
+                let radius, angle, y, x, z;
+                
+                if (data.category === 'technical') {
+                    // Fixed positions for technical arsenal cards
+                    const technicalIndex = cardData.filter(c => c.category === 'technical').indexOf(data);
+                    const technicalPositions = [
+                        { x: -40, y: 15, z: -15 },   // JavaScript
+                        { x: -35, y: -5, z: -25 },   // React
+                        { x: -45, y: 8, z: -8 },     // Python
+                        { x: -28, y: 20, z: -35 },   // Node.js
+                        { x: -52, y: -10, z: -18 },  // MongoDB
+                        { x: -38, y: 25, z: -12 },   // Git
+                        { x: -25, y: -15, z: -28 }   // CSS
+                    ];
+                    
+                    const position = technicalPositions[technicalIndex] || { x: -40, y: 0, z: -20 };
+                    x = position.x;
+                    y = position.y;
+                    z = position.z;
+                } else if (data.category === 'journey') {
+                    // Position journey cards in a horizontal row up front
+                    const journeyIndex = cardData.filter(c => c.category === 'journey').indexOf(data);
+                    const journeyPositions = [
+                        { x: -30, y: 5, z: 15 },     // Card 1 - far left
+                        { x: -10, y: 5, z: 15 },     // Card 2 - left
+                        { x: 10, y: 5, z: 15 },      // Card 3 - right
+                        { x: 30, y: 5, z: 15 },      // Card 4 - far right
+                        { x: -20, y: 5, z: 15 },     // Card 5 - between 1&2
+                        { x: 0, y: 5, z: 15 },       // Card 6 - center
+                        { x: 20, y: 5, z: 15 }       // Card 7 - between 3&4
+                    ];
+                    
+                    const position = journeyPositions[journeyIndex] || { x: 0, y: 5, z: 15 };
+                    x = position.x;
+                    y = position.y;
+                    z = position.z;
+                } else {
+                    // Outer ring for projects
+                    radius = 42;
+                    const projectIndex = cardData.filter(c => c.category === 'project').indexOf(data);
+                    angle = (projectIndex * Math.PI) + Math.PI / 2;
+                    y = 25;
+                    x = Math.cos(angle) * radius;
+                    z = Math.sin(angle) * radius;
+                }
+                
+                cardGroup.position.set(x, y, z);
+                cardGroup.lookAt(0, y, 0);
+                
+                // Add components to group
+                cardGroup.add(cardMesh);
+                cardGroup.add(cardEdges);
+                cardGroup.add(textMesh);
+                
+                // Store references
+                cardMesh.userData = { 
+                    index, 
+                    originalPosition: cardGroup.position.clone(),
+                    originalScale: cardGroup.scale.clone(),
+                    data: data
+                };
+                
+                floatingCards.push(cardGroup);
+                cardMaterials.push(glassMaterial);
+                
+                scene.add(cardGroup);
+            });
+        }
+        
+        // Create particle system
+        function createParticles() {
+            const particleCount = 1000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            const color = new THREE.Color();
+            
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Random positions in a sphere around the helix
+                positions[i3] = (Math.random() - 0.5) * 200;
+                positions[i3 + 1] = (Math.random() - 0.5) * 200;
+                positions[i3 + 2] = (Math.random() - 0.5) * 100;
+                
+                // Gradient colors
+                color.setHSL(0.6 + Math.random() * 0.2, 0.8, 0.5 + Math.random() * 0.5);
+                colors[i3] = color.r;
+                colors[i3 + 1] = color.g;
+                colors[i3 + 2] = color.b;
+                
+                sizes[i] = Math.random() * 3 + 1;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                sizeAttenuation: true
+            });
+            
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+        }
+        
+        // Mouse movement handler
+        function onMouseMove(event) {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            // Update mouse position for raycasting
+            mouse.x = mouseX;
+            mouse.y = mouseY;
+            
+            // Raycast for card hover detection
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(floatingCards.map(card => card.children[0]));
+            
+            // Reset all cards to normal state
+            floatingCards.forEach((card, index) => {
+                if (card !== hoveredCard) {
+                    gsap.to(card.scale, { x: 1, y: 1, z: 1, duration: 0.3 });
+                    gsap.to(card.rotation, { x: 0, z: 0, duration: 0.3 });
+                    gsap.to(cardMaterials[index], { opacity: 0.15, duration: 0.3 });
+                }
+            });
+            
+            // Handle hover effects
+            if (intersects.length > 0) {
+                const intersectedCard = intersects[0].object.parent;
+                const cardIndex = intersectedCard.children[0].userData.index;
+                
+                if (hoveredCard !== intersectedCard) {
+                    hoveredCard = intersectedCard;
+                    
+                    // Hover animations
+                    gsap.to(intersectedCard.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.4, ease: "power2.out" });
+                    gsap.to(intersectedCard.rotation, { 
+                        x: Math.sin(Date.now() * 0.005) * 0.1,
+                        z: Math.cos(Date.now() * 0.003) * 0.1,
+                        duration: 0.4 
+                    });
+                    gsap.to(cardMaterials[cardIndex], { opacity: 0.3, duration: 0.4 });
+                    
+                    // Pulsing effect
+                    gsap.to(intersectedCard.position, {
+                        y: intersectedCard.position.y + 2,
+                        duration: 1,
+                        yoyo: true,
+                        repeat: -1,
+                        ease: "power2.inOut"
+                    });
+                    
+                    // Change cursor
+                    document.body.style.cursor = 'pointer';
+                }
+            } else {
+                if (hoveredCard) {
+                    // Stop pulsing
+                    gsap.killTweensOf(hoveredCard.position);
+                    gsap.to(hoveredCard.position, {
+                        y: hoveredCard.children[0].userData.originalPosition.y,
+                        duration: 0.5
+                    });
+                }
+                hoveredCard = null;
+                document.body.style.cursor = 'default';
+            }
+        }
+        
+        // Mouse click handler
+        function onMouseClick(event) {
+            if (hoveredCard) {
+                const cardData = hoveredCard.children[0].userData.data;
+                
+                // Dramatic click animation
+                gsap.to(hoveredCard.scale, { x: 0.9, y: 0.9, z: 0.9, duration: 0.1 });
+                gsap.to(hoveredCard.scale, { x: 1.3, y: 1.3, z: 1.3, duration: 0.4, delay: 0.1 });
+                
+                // Spin effect
+                gsap.to(hoveredCard.rotation, { 
+                    y: hoveredCard.rotation.y + Math.PI * 2,
+                    duration: 1,
+                    ease: "power2.out"
+                });
+                
+                // Show modal with card information
+                showCardModal(cardData);
+            }
+        }
+        
+        // Modal functionality
+        function showCardModal(cardData) {
+            const modal = document.getElementById('card-modal');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalCategory = document.getElementById('modal-category');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalSkill = document.getElementById('modal-skill');
+            const modalProgressFill = document.getElementById('modal-progress-fill');
+            const modalProgressText = document.getElementById('modal-progress-text');
+            const modalActions = document.getElementById('modal-actions');
+            
+            // Populate modal content
+            modalIcon.textContent = cardData.icon;
+            modalIcon.style.color = `#${cardData.color.toString(16).padStart(6, '0')}`;
+            modalCategory.textContent = cardData.category.toUpperCase();
+            modalCategory.style.color = `#${cardData.color.toString(16).padStart(6, '0')}`;
+            modalTitle.textContent = cardData.title;
+            modalDescription.textContent = cardData.description;
+            modalSkill.textContent = cardData.skill;
+            modalProgressFill.style.width = `${cardData.progress}%`;
+            modalProgressFill.style.background = `linear-gradient(90deg, #${cardData.color.toString(16).padStart(6, '0')}, #f093fb)`;
+            modalProgressText.textContent = `${cardData.progress}%`;
+            
+            // Clear previous actions
+            modalActions.innerHTML = '';
+            
+            // Add category-specific actions
+            if (cardData.category === 'project') {
+                if (cardData.title.includes('Quick Read')) {
+                    const githubBtn = document.createElement('a');
+                    githubBtn.href = 'https://github.com/jxhnnny/Quick-Read/tree/main';
+                    githubBtn.target = '_blank';
+                    githubBtn.className = 'modal-action-btn';
+                    githubBtn.innerHTML = 'View on GitHub';
+                    modalActions.appendChild(githubBtn);
+                }
+                
+                if (cardData.title.includes('Portfolio')) {
+                    const exploreBtn = document.createElement('button');
+                    exploreBtn.className = 'modal-action-btn secondary';
+                    exploreBtn.innerHTML = 'You\'re Here!';
+                    exploreBtn.onclick = () => hideCardModal();
+                    modalActions.appendChild(exploreBtn);
+                }
+            } else if (cardData.category === 'technical') {
+                const learnBtn = document.createElement('button');
+                learnBtn.className = 'modal-action-btn';
+                learnBtn.innerHTML = 'Explore Skills';
+                learnBtn.onclick = () => {
+                    hideCardModal();
+                    document.getElementById('skills').scrollIntoView({ behavior: 'smooth' });
+                };
+                modalActions.appendChild(learnBtn);
+            } else if (cardData.category === 'journey') {
+                const journeyBtn = document.createElement('button');
+                journeyBtn.className = 'modal-action-btn';
+                journeyBtn.innerHTML = 'View Timeline';
+                journeyBtn.onclick = () => {
+                    hideCardModal();
+                    document.getElementById('journey').scrollIntoView({ behavior: 'smooth' });
+                };
+                modalActions.appendChild(journeyBtn);
+            }
+            
+            // Add close action for all cards
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'modal-action-btn secondary';
+            closeBtn.innerHTML = '← Back to 3D';
+            closeBtn.onclick = () => hideCardModal();
+            modalActions.appendChild(closeBtn);
+            
+            // Show modal with animation
+            modal.classList.add('active');
+            
+            // Animate progress bar
+            setTimeout(() => {
+                modalProgressFill.style.width = `${cardData.progress}%`;
+            }, 300);
+        }
+        
+        function hideCardModal() {
+            const modal = document.getElementById('card-modal');
+            modal.classList.remove('active');
+        }
+        
+        // Initialize modal close handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('card-modal');
+            const modalClose = document.getElementById('modal-close');
+            const modalBackdrop = modal.querySelector('.modal-backdrop');
+            
+            // Close modal when clicking close button
+            modalClose.addEventListener('click', hideCardModal);
+            
+            // Close modal when clicking backdrop
+            modalBackdrop.addEventListener('click', hideCardModal);
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    hideCardModal();
+                }
+            });
+        });
+        
+        // Window resize handler
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Rotate helix
+            if (helixGroup) {
+                helixGroup.rotation.y = time * 0.2;
+                helixGroup.rotation.x = Math.sin(time * 0.3) * 0.1;
+                
+                // Mouse interaction
+                helixGroup.rotation.x += mouseY * 0.05;
+                helixGroup.rotation.y += mouseX * 0.05;
+            }
+            
+            // Animate floating cards
+            floatingCards.forEach((card, index) => {
+                const cardData = card.children[0].userData.data;
+                
+                // Only animate project cards - keep technical and journey cards static
+                if (cardData.category === 'project') {
+                    // Gentle floating motion for projects only
+                    const offset = index * 0.5;
+                    card.position.y += Math.sin(time + offset) * 0.01;
+                    
+                    // Subtle rotation when not hovered (projects only)
+                    if (card !== hoveredCard) {
+                        card.rotation.y = Math.sin(time * 0.2 + offset) * 0.1;
+                        card.rotation.x = Math.cos(time * 0.15 + offset) * 0.05;
+                    }
+                }
+                
+                // Glowing effect for all cards
+                cardMaterials[index].emissiveIntensity = 0.1 + Math.sin(time * 2 + index) * 0.05;
+            });
+            
+            // Animate particles
+            if (particles) {
+                particles.rotation.y = time * 0.1;
+                particles.rotation.x = time * 0.05;
+                
+                // Pulse effect
+                const positions = particles.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i + 1] += Math.sin(time + i) * 0.01;
+                }
+                particles.geometry.attributes.position.needsUpdate = true;
+            }
+            
+            // Camera gentle movement
+            camera.position.x += (mouseX * 3 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 3 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init3D);
     </script>
 </body>
 </html>
